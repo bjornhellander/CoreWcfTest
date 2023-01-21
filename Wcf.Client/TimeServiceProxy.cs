@@ -1,6 +1,6 @@
 ﻿using System;
-using System.ServiceModel;
 using System.Threading.Tasks;
+using Wcf.Client;
 using WcfTest.Interface;
 
 namespace WcfTest.Wcf.Client
@@ -11,10 +11,7 @@ namespace WcfTest.Wcf.Client
 
         public TimeServiceProxy()
         {
-            var binding = new NetTcpBinding();
-            var addr = new EndpointAddress(ServiceInformation.BaseAddress + TimeServiceInformation.Name);
-            var channelFactory = new DuplexChannelFactory<ITimeService>(this, binding, addr);
-            channel = channelFactory.CreateChannel();
+            channel = MyDuplexChannelFactory.Create<ITimeService>(this);
         }
 
         public delegate void TimeUpdatedHandler(DateTime time);

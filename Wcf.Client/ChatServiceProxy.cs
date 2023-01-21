@@ -1,5 +1,5 @@
-﻿using System.ServiceModel;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Wcf.Client;
 using WcfTest.Interface;
 
 namespace WcfTest.Wcf.Client
@@ -10,10 +10,7 @@ namespace WcfTest.Wcf.Client
 
         public ChatServiceProxy()
         {
-            var binding = new NetTcpBinding();
-            var addr = new EndpointAddress(ServiceInformation.BaseAddress + ChatServiceInformation.Name);
-            var channelFactory = new DuplexChannelFactory<IChatService>(this, binding, addr);
-            channel = channelFactory.CreateChannel();
+            channel = MyDuplexChannelFactory.Create<IChatService>(this);
         }
 
         public delegate void MessagePostedHandler(string message);

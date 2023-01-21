@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Interface;
+using System;
 using System.ServiceModel;
 using WcfTest.Interface;
 
@@ -11,8 +12,8 @@ namespace WcfTest.Wcf.Server
             try
             {
                 Console.WriteLine("Starting service...");
-                var chatServiceHost = StartService(typeof(ChatService), typeof(IChatService), ChatServiceInformation.Name);
-                var timeServiceHost = StartService(typeof(TimeService), typeof(ITimeService), TimeServiceInformation.Name);
+                var chatServiceHost = StartService(typeof(ChatService), typeof(IChatService));
+                var timeServiceHost = StartService(typeof(TimeService), typeof(ITimeService));
 
                 Console.WriteLine("Service running");
                 Console.WriteLine("Press any key to exit");
@@ -30,10 +31,11 @@ namespace WcfTest.Wcf.Server
             }
         }
 
-        private static ServiceHost StartService(Type serviceType, Type serviceContractType, string endpointName)
+        private static ServiceHost StartService(Type serviceType, Type serviceContractType)
         {
             var selfHost = new ServiceHost(serviceType, ServiceInformation.BaseAddress);
             var binding = new NetTcpBinding();
+            var endpointName = EndpointNameFactory.Create(serviceContractType);
             selfHost.AddServiceEndpoint(serviceContractType, binding, endpointName);
             selfHost.Open();
 

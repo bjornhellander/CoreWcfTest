@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CoreWCF;
 using CoreWCF.Configuration;
+using Interface;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using WcfTest.Interface;
@@ -14,10 +15,10 @@ namespace WcfTest.CoreWcf.Server
         {
             try
             {
-                var services = new List<(Type ServiceType, Type ServiceContractType, string EndpointName)>
+                var services = new List<(Type ServiceType, Type ServiceContractType)>
                 {
-                    (typeof(ChatService), typeof(IChatService), ChatServiceInformation.Name),
-                    (typeof(TimeService), typeof(ITimeService), TimeServiceInformation.Name),
+                    (typeof(ChatService), typeof(IChatService)),
+                    (typeof(TimeService), typeof(ITimeService)),
                 };
 
                 Console.WriteLine("Starting service...");
@@ -33,7 +34,7 @@ namespace WcfTest.CoreWcf.Server
             }
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(int portNumber, List<(Type ServiceType, Type ServiceContractType, string EndpointName)> services)
+        public static IWebHostBuilder CreateWebHostBuilder(int portNumber, List<(Type ServiceType, Type ServiceContractType)> services)
         {
             var webHostBuilder = WebHost.CreateDefaultBuilder()
                 .UseKestrel(kestrelServerOptions =>
@@ -45,8 +46,9 @@ namespace WcfTest.CoreWcf.Server
                  {
                      applicationBuilder.UseServiceModel(serviceBuilder =>
                      {
-                         foreach (var (serviceType, serviceContractType, endpointName) in services)
+                         foreach (var (serviceType, serviceContractType) in services)
                          {
+                             var endpointName = EndpointNameFactory.Create(serviceContractType);
                              serviceBuilder
                                  .AddService(serviceType)
                                  .AddServiceEndpoint(serviceType, serviceContractType, new NetTcpBinding(), new Uri(endpointName, UriKind.Relative), null);
