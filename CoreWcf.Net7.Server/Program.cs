@@ -8,6 +8,7 @@ using Interface;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Unity;
 using WcfTest.Interface;
 
@@ -73,7 +74,11 @@ namespace WcfTest.CoreWcf.Server
                              }
                          }
                      });
-                 });
+                 })
+                .ConfigureLogging((context, logging) =>
+                {
+                    logging.ClearProviders();
+                });
 
             return webHostBuilder;
         }
