@@ -54,7 +54,7 @@ namespace WcfTest.CoreWcf.Server
                     serviceCollection.AddServiceModelServices();
                     foreach (var service in services)
                     {
-                        serviceCollection.AddSingleton(service.GetType(), sp => service);
+                        serviceCollection.AddSingleton(service.GetType(), service);
                     }
                 })
                 .Configure(applicationBuilder =>
