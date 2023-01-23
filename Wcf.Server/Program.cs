@@ -18,7 +18,7 @@ namespace WcfTest.Wcf.Server
                 container.RegisterType<IHostableService, ChatService>(nameof(ChatService));
                 container.RegisterType<IHostableService, TimeService>(nameof(TimeService));
 
-                Console.WriteLine("Starting service...");
+                Console.WriteLine("Starting services...");
                 var services = container.ResolveAll<IHostableService>();
                 var serviceHosts = new List<ServiceHost>();
                 foreach (var service in services)

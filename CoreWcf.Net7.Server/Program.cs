@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CoreWCF;
 using CoreWCF.Configuration;
 using Interface;
@@ -11,7 +12,7 @@ namespace WcfTest.CoreWcf.Server
 {
     public class Program
     {
-        public static void Main()
+        public static async Task Main()
         {
             try
             {
@@ -21,12 +22,14 @@ namespace WcfTest.CoreWcf.Server
                     (typeof(TimeService), typeof(ITimeService)),
                 };
 
-                Console.WriteLine("Starting service...");
+                Console.WriteLine("Starting services...");
                 var webHostBuilder = CreateWebHostBuilder(ServiceInformation.Port, services);
                 var host = webHostBuilder.Build();
-                host.Start();
+                await host.StartAsync();
+
                 Console.WriteLine("Press any key to exit");
                 Console.ReadKey();
+                await host.StopAsync();
             }
             catch (CommunicationException e)
             {
