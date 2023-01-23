@@ -51,10 +51,12 @@ namespace WcfTest.CoreWcf.Server
                      {
                          foreach (var (serviceType, serviceContractType) in services)
                          {
+                             serviceBuilder.AddService(serviceType);
+
                              var endpointName = EndpointNameFactory.Create(serviceContractType);
-                             serviceBuilder
-                                 .AddService(serviceType)
-                                 .AddServiceEndpoint(serviceType, serviceContractType, new NetTcpBinding(), new Uri(endpointName, UriKind.Relative), null);
+                             var binding = new NetTcpBinding();
+                             var address = new Uri(endpointName, UriKind.Relative);
+                             serviceBuilder.AddServiceEndpoint(serviceType, serviceContractType, binding, address, null);
                          }
                      });
                  });
