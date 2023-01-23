@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,10 +9,12 @@ using WcfTest.Interface;
 namespace WcfTest.CoreWcf.Server
 {
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.Single)]
-    internal class ChatService : IChatService
+    internal class ChatService : IChatService, IHostableService
     {
         private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private readonly List<IChatServiceCallback> callbacks = new List<IChatServiceCallback>();
+
+        public Type[] ServiceContracts => new[] { typeof(IChatService) };
 
         public async Task ConnectAsync()
         {

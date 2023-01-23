@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <Compile Include="..\CoreWcf.Net7.Server\ChatService.cs" Link="ChatService.cs" />
+    <Compile Include="..\CoreWcf.Net7.Server\IHostableService.cs" Link="IHostableService.cs" />
     <Compile Include="..\CoreWcf.Net7.Server\Program.cs" Link="Program.cs" />
     <Compile Include="..\CoreWcf.Net7.Server\TimeService.cs" Link="TimeService.cs" />
   </ItemGroup>
@@ -15,6 +16,7 @@
     <PackageReference Include="CoreWCF.NetTcp" Version="1.3.1" />
     <PackageReference Include="CoreWCF.Primitives" Version="1.3.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Unity.Container" Version="5.11.11" />
   </ItemGroup>
 
   <ItemGroup>

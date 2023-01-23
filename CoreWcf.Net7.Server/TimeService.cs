@@ -9,7 +9,7 @@ using WcfTest.Interface;
 namespace WcfTest.CoreWcf.Server
 {
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.Single)]
-    internal class TimeService : ITimeService
+    internal class TimeService : ITimeService, IHostableService
     {
         private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private readonly List<ITimeServiceCallback> callbacks = new List<ITimeServiceCallback>();
@@ -20,6 +20,8 @@ namespace WcfTest.CoreWcf.Server
             timer.Elapsed += (s, e) => HandleTimerElapsed();
             timer.Start();
         }
+
+        public Type[] ServiceContracts => new[] { typeof(ITimeService) };
 
         public async Task ConnectAsync()
         {

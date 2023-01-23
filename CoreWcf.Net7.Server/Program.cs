@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CoreWCF;
 using CoreWCF.Configuration;
 using Interface;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Unity;
 using WcfTest.Interface;
 
 namespace WcfTest.CoreWcf.Server
@@ -16,13 +19,13 @@ namespace WcfTest.CoreWcf.Server
         {
             try
             {
-                var services = new List<(Type ServiceType, Type ServiceContractType)>
-                {
-                    (typeof(ChatService), typeof(IChatService)),
-                    (typeof(TimeService), typeof(ITimeService)),
-                };
+                Console.WriteLine("Configuring DI container...");
+                var container = new UnityContainer();
+                container.RegisterType<IHostableService, ChatService>(nameof(ChatService));
+                container.RegisterType<IHostableService, TimeService>(nameof(TimeService));
 
                 Console.WriteLine("Starting services...");
+                var services = container.ResolveAll<IHostableService>().ToList();
                 var webHostBuilder = CreateWebHostBuilder(ServiceInformation.Port, services);
                 var host = webHostBuilder.Build();
                 await host.StartAsync();
@@ -37,7 +40,7 @@ namespace WcfTest.CoreWcf.Server
             }
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(int portNumber, List<(Type ServiceType, Type ServiceContractType)> services)
+        private static IWebHostBuilder CreateWebHostBuilder(int portNumber, IReadOnlyList<IHostableService> services)
         {
             var webHostBuilder = WebHost.CreateDefaultBuilder()
                 .UseKestrel(kestrelServerOptions =>
@@ -49,14 +52,17 @@ namespace WcfTest.CoreWcf.Server
                  {
                      applicationBuilder.UseServiceModel(serviceBuilder =>
                      {
-                         foreach (var (serviceType, serviceContractType) in services)
+                         foreach (var service in services)
                          {
-                             serviceBuilder.AddService(serviceType);
+                             serviceBuilder.AddService(service.GetType());
 
-                             var endpointName = EndpointNameFactory.Create(serviceContractType);
-                             var binding = new NetTcpBinding();
-                             var address = new Uri(endpointName, UriKind.Relative);
-                             serviceBuilder.AddServiceEndpoint(serviceType, serviceContractType, binding, address, null);
+                             foreach (var serviceContractType in service.ServiceContracts)
+                             {
+                                 var endpointName = EndpointNameFactory.Create(serviceContractType);
+                                 var binding = new NetTcpBinding();
+                                 var address = new Uri(endpointName, UriKind.Relative);
+                                 serviceBuilder.AddServiceEndpoint(service.GetType(), serviceContractType, binding, address, null);
+                             }
                          }
                      });
                  });
@@ -64,6 +70,10 @@ namespace WcfTest.CoreWcf.Server
             webHostBuilder.ConfigureServices(serviceCollection =>
             {
                 serviceCollection.AddServiceModelServices();
+                foreach (var service in services)
+                {
+                    serviceCollection.AddSingleton(service.GetType(), sp => service);
+                }
             });
 
             return webHostBuilder;
