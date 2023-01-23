@@ -1,6 +1,8 @@
 ﻿using Interface;
 using System;
+using System.Collections.Generic;
 using System.ServiceModel;
+using Unity;
 using WcfTest.Interface;
 
 namespace WcfTest.Wcf.Server
@@ -11,16 +13,27 @@ namespace WcfTest.Wcf.Server
         {
             try
             {
+                Console.WriteLine("Configuring DI container...");
+                var container = new UnityContainer();
+                container.RegisterType<IHostableService, ChatService>(nameof(ChatService));
+                container.RegisterType<IHostableService, TimeService>(nameof(TimeService));
+
                 Console.WriteLine("Starting service...");
-                var chatServiceHost = StartService(typeof(ChatService), typeof(IChatService));
-                var timeServiceHost = StartService(typeof(TimeService), typeof(ITimeService));
+                var services = container.ResolveAll<IHostableService>();
+                var serviceHosts = new List<ServiceHost>();
+                foreach (var service in services)
+                {
+                    serviceHosts.Add(StartService(service));
+                }
 
                 Console.WriteLine("Service running");
                 Console.WriteLine("Press any key to exit");
                 Console.ReadKey();
 
-                StopService(chatServiceHost);
-                StopService(timeServiceHost);
+                foreach (var serviceHost in serviceHosts)
+                {
+                    StopService(serviceHost);
+                }
             }
             catch (CommunicationException e)
             {
@@ -31,14 +44,18 @@ namespace WcfTest.Wcf.Server
             }
         }
 
-        private static ServiceHost StartService(Type serviceType, Type serviceContractType)
+        private static ServiceHost StartService(IHostableService service)
         {
-            var selfHost = new ServiceHost(serviceType, ServiceInformation.BaseAddress);
-            var binding = new NetTcpBinding();
-            var endpointName = EndpointNameFactory.Create(serviceContractType);
-            selfHost.AddServiceEndpoint(serviceContractType, binding, endpointName);
-            selfHost.Open();
+            var selfHost = new ServiceHost(service, ServiceInformation.BaseAddress);
 
+            foreach (var serviceContractType in service.ServiceContracts)
+            {
+                var binding = new NetTcpBinding();
+                var endpointName = EndpointNameFactory.Create(serviceContractType);
+                selfHost.AddServiceEndpoint(serviceContractType, binding, endpointName);
+            }
+
+            selfHost.Open();
             return selfHost;
         }
 
