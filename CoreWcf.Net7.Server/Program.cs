@@ -48,6 +48,14 @@ namespace WcfTest.CoreWcf.Server
                     kestrelServerOptions.ListenLocalhost(8080); // TODO: How is this relevant?
                 })
                 .UseNetTcp(portNumber)
+                .ConfigureServices(serviceCollection =>
+                {
+                    serviceCollection.AddServiceModelServices();
+                    foreach (var service in services)
+                    {
+                        serviceCollection.AddSingleton(service.GetType(), sp => service);
+                    }
+                })
                 .Configure(applicationBuilder =>
                  {
                      applicationBuilder.UseServiceModel(serviceBuilder =>
@@ -66,15 +74,6 @@ namespace WcfTest.CoreWcf.Server
                          }
                      });
                  });
-
-            webHostBuilder.ConfigureServices(serviceCollection =>
-            {
-                serviceCollection.AddServiceModelServices();
-                foreach (var service in services)
-                {
-                    serviceCollection.AddSingleton(service.GetType(), sp => service);
-                }
-            });
 
             return webHostBuilder;
         }
