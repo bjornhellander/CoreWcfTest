@@ -46,7 +46,7 @@ namespace WcfTest.CoreWcf.Server
             var webHostBuilder = WebHost.CreateDefaultBuilder()
                 .UseKestrel(kestrelServerOptions =>
                 {
-                    kestrelServerOptions.ListenLocalhost(8080); // TODO: How is this relevant?
+                    kestrelServerOptions.ListenAnyIP(0); // 0 means any available port
                 })
                 .UseNetTcp(portNumber)
                 .ConfigureServices(serviceCollection =>
