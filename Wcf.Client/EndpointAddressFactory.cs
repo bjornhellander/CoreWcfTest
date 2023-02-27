@@ -9,7 +9,7 @@ namespace Wcf.Client
     {
         public static EndpointAddress Create(Type serviceType)
         {
-            return new EndpointAddress(ServiceInformation.BaseAddress + EndpointNameFactory.Create(serviceType));
+            return new EndpointAddress(ServiceInformation.ClientBaseAddress + EndpointNameFactory.Create(serviceType));
         }
     }
 }

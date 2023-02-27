@@ -46,7 +46,7 @@ namespace WcfTest.Wcf.Server
 
         private static ServiceHost StartService(IHostableService service)
         {
-            var selfHost = new ServiceHost(service, ServiceInformation.BaseAddress);
+            var selfHost = new ServiceHost(service, ServiceInformation.ServerBaseAddress);
 
             foreach (var serviceContractType in service.ServiceContracts)
             {
