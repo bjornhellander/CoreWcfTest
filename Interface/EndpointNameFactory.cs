@@ -6,7 +6,7 @@ namespace Interface
     {
         public static string Create(Type serviceType)
         {
-            return serviceType.Name;
+            return $"Xyz/{serviceType.Name}";
         }
     }
 }
