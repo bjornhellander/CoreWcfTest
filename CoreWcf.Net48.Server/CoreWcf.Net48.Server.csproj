@@ -10,6 +10,7 @@
     <Compile Include="..\CoreWcf.Net7.Server\EndpointAddressFactory.cs" Link="EndpointAddressFactory.cs" />
     <Compile Include="..\CoreWcf.Net7.Server\IHostableService.cs" Link="IHostableService.cs" />
     <Compile Include="..\CoreWcf.Net7.Server\Program.cs" Link="Program.cs" />
+    <Compile Include="..\CoreWcf.Net7.Server\ServiceStarter.cs" Link="ServiceStarter.cs" />
     <Compile Include="..\CoreWcf.Net7.Server\TimeService.cs" Link="TimeService.cs" />
   </ItemGroup>
 
